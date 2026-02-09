@@ -39,7 +39,7 @@ RUN pnpm install --prod --frozen-lockfile
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 
-EXPOSE 3001
+EXPOSE 3002
 
 # Iniciamos directo con Node para ahorrar memoria (no hace falta pasar por pnpm start)
 CMD ["node", "dist/server.js"]
