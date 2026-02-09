@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Kanban - Gestión de Tareas</title>
+    <link rel="stylesheet" href="kanban.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>📊 Sistema Kanban de Tareas</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="showModal('modalNuevaTarea')">
+                    ➕ Nueva Tarea
+                </button>
+                <button class="btn btn-secondary" onclick="showModal('modalNuevoTrabajador')">
+                    👤 Nuevo Trabajador
+                </button>
+                <button class="btn btn-info" onclick="exportarDatos()">
+                    💾 Exportar Datos
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación de vistas -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" onclick="cambiarVista('tablero')">
+                📋 Tablero Kanban
+            </button>
+            <button class="tab-btn" onclick="cambiarVista('trabajadores')">
+                👥 Por Trabajador
+            </button>
+            <button class="tab-btn" onclick="cambiarVista('informes')">
+                📈 Informes
+            </button>
+        </nav>
+
+        <!-- Vista Tablero Kanban -->
+        <div id="vistaTablero" class="vista active">
+            <div class="filtros">
+                <select id="filtroTrabajador" onchange="filtrarTareas()">
+                    <option value="">Todos los trabajadores</option>
+                </select>
+                <select id="filtroPlazo" onchange="filtrarTareas()">
+                    <option value="">Todos los plazos</option>
+                    <option value="diario">Diario</option>
+                    <option value="semanal">Semanal</option>
+                </select>
+            </div>
+            
+            <div class="kanban-board">
+                <div class="kanban-column" data-estado="pendiente">
+                    <div class="column-header">
+                        <h3>⏳ Pendiente</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                    <div class="tasks-container" id="pendiente"></div>
+                </div>
+
+                <div class="kanban-column" data-estado="en-progreso">
+                    <div class="column-header">
+                        <h3>🚀 En Progreso</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                    <div class="tasks-container" id="en-progreso"></div>
+                </div>
+
+                <div class="kanban-column" data-estado="completado">
+                    <div class="column-header">
+                        <h3>✅ Completado</h3>
+                        <span class="task-count">0</span>
+                    </div>
+                    <div class="tasks-container" id="completado"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista Por Trabajador -->
+        <div id="vistaTrabajadores" class="vista">
+            <div class="trabajadores-grid" id="trabajadoresGrid"></div>
+        </div>
+
+        <!-- Vista Informes -->
+        <div id="vistaInformes" class="vista">
+            <div class="informes-container">
+                <div class="informe-card">
+                    <h3>📊 Resumen General</h3>
+                    <div id="resumenGeneral"></div>
+                </div>
+                
+                <div class="informe-card">
+                    <h3>👥 Rendimiento por Trabajador</h3>
+                    <div id="rendimientoTrabajadores"></div>
+                </div>
+
+                <div class="informe-card">
+                    <h3>📅 Tareas por Plazo</h3>
+                    <div id="tareasPorPlazo"></div>
+                </div>
+
+                <div class="informe-card">
+                    <h3>⚠️ Tareas Atrasadas</h3>
+                    <div id="tareasAtrasadas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nueva Tarea -->
+    <div id="modalNuevaTarea" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nueva Tarea</h2>
+                <span class="close" onclick="closeModal('modalNuevaTarea')">&times;</span>
+            </div>
+            <form id="formNuevaTarea" onsubmit="crearTarea(event)">
+                <div class="form-group">
+                    <label>Título de la tarea *</label>
+                    <input type="text" id="tareaTitulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="tareaDescripcion" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Asignar a *</label>
+                        <select id="tareaAsignado" required>
+                            <option value="">Seleccionar trabajador</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Plazo *</label>
+                        <select id="tareaPlazo" required>
+                            <option value="diario">Diario</option>
+                            <option value="semanal">Semanal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fecha Inicio *</label>
+                        <input type="date" id="tareaFechaInicio" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha Fin *</label>
+                        <input type="date" id="tareaFechaFin" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Prioridad</label>
+                    <select id="tareaPrioridad">
+                        <option value="baja">Baja</option>
+                        <option value="media" selected>Media</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalNuevaTarea')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Crear Tarea
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Trabajador -->
+    <div id="modalNuevoTrabajador" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nuevo Trabajador</h2>
+                <span class="close" onclick="closeModal('modalNuevoTrabajador')">&times;</span>
+            </div>
+            <form id="formNuevoTrabajador" onsubmit="crearTrabajador(event)">
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="trabajadorNombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="trabajadorEmail">
+                </div>
+
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" id="trabajadorCargo">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalNuevoTrabajador')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Crear Trabajador
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalles de Tarea -->
+    <div id="modalDetallesTarea" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2 id="detallesTitulo"></h2>
+                <span class="close" onclick="closeModal('modalDetallesTarea')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="detalles-grid">
+                    <div class="detalles-main">
+                        <div class="form-group">
+                            <label>Título:</label>
+                            <input type="text" id="detallesTituloInput" class="form-control" onchange="actualizarCampoTarea('titulo', this.value)">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Descripción:</label>
+                            <textarea id="detallesDescripcion" rows="3" class="form-control" onchange="actualizarCampoTarea('descripcion', this.value)"></textarea>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="form-group">
+                                <label>Asignado a:</label>
+                                <select id="detallesAsignado" class="form-control" onchange="actualizarCampoTarea('asignado', this.value)">
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Estado:</label>
+                                <select id="detallesEstado" class="form-control" onchange="actualizarEstadoTarea()">
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="en-progreso">En Progreso</option>
+                                    <option value="completado">Completado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="form-group">
+                                <label>Fecha Inicio:</label>
+                                <input type="date" id="detallesFechaInicio" class="form-control" onchange="actualizarCampoTarea('fechaInicio', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Fin:</label>
+                                <input type="date" id="detallesFechaFin" class="form-control" onchange="actualizarCampoTarea('fechaFin', this.value)">
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label>Progreso (calculado automáticamente): <span id="progresoValor">0%</span></label>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                                ℹ️ El progreso se calcula automáticamente: microtareas completadas / total de microtareas
+                            </p>
+                        </div>
+
+                        <!-- Microtareas -->
+                        <div class="microtareas-section">
+                            <div class="section-header">
+                                <h3>📝 Microtareas</h3>
+                                <button class="btn btn-sm btn-primary" onclick="agregarMicrotarea()">
+                                    ➕ Agregar
+                                </button>
+                            </div>
+                            <div id="listaMicrotareas"></div>
+                        </div>
+                    </div>
+
+                    <div class="detalles-sidebar">
+                        <div class="form-group">
+                            <label>Plazo:</label>
+                            <select id="detallesPlazo" class="form-control" onchange="actualizarCampoTarea('plazo', this.value)">
+                                <option value="diario">Diario</option>
+                                <option value="semanal">Semanal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Prioridad:</label>
+                            <select id="detallesPrioridad" class="form-control" onchange="actualizarCampoTarea('prioridad', this.value)">
+                                <option value="baja">Baja</option>
+                                <option value="media">Media</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Creada:</label>
+                            <p id="detallesFechaCreacion"></p>
+                        </div>
+                        <div class="info-group">
+                            <label>ID Tarea:</label>
+                            <p id="detallesIdTarea" style="font-size: 11px; color: #999;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="eliminarTarea()">
+                    🗑️ Eliminar Tarea
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('modalDetallesTarea')">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Trabajador -->
+    <div id="modalEditarTrabajador" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Trabajador</h2>
+                <span class="close" onclick="closeModal('modalEditarTrabajador')">&times;</span>
+            </div>
+            <form id="formEditarTrabajador" onsubmit="guardarEdicionTrabajador(event)">
+                <div class="form-group">
+                    <label>Nombre completo *</label>
+                    <input type="text" id="editTrabajadorNombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="editTrabajadorEmail">
+                </div>
+
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" id="editTrabajadorCargo">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="eliminarTrabajador()">
+                        🗑️ Eliminar Trabajador
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalEditarTrabajador')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="kanban.js"></script>
+</body>
+</html>

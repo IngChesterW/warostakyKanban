@@ -1,0 +1,80 @@
+{
+    "name": "Procesaky - Software de Vanguardia",
+    "short_name": "Procesaky",
+    "description": "Empresa boliviana de desarrollo de software. Creamos páginas web, apps móviles, aplicaciones de escritorio, automatización y servicios de ciberseguridad.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0b0f1a",
+    "theme_color": "#6366f1",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "es",
+    "dir": "ltr",
+    "categories": ["business", "productivity", "utilities"],
+    "icons": [
+        {
+            "src": "/imagens/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/imagens/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/imagens/apple-icon.png",
+            "sizes": "180x180",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/imagens/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/imagens/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshot-wide.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Procesaky - Página Principal"
+        },
+        {
+            "src": "/screenshot-mobile.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Procesaky - Vista Móvil"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Servicios",
+            "short_name": "Servicios",
+            "description": "Ver nuestros servicios de desarrollo",
+            "url": "/#servicios",
+            "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Contacto",
+            "short_name": "Contacto",
+            "description": "Contáctanos para tu proyecto",
+            "url": "/#contacto",
+            "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false
+}
